@@ -88,13 +88,13 @@ async def start_cmd(message: Message):
 async def all_messages(message: Message):
     user_id = message.from_user.id
 
-    # ==== 1) WebAppdan kelgan tarjima natijasi ====
+    # WebAppdan kelgan data
     if message.web_app_data:
         result = message.web_app_data.data
         await message.answer(f"🌐 WebApp tarjimasi:\n\n{result}")
         return
 
-    # ==== 2) Til yo‘nalishini tanlash ====
+    # Til yo'nalishini tanlash
     if "→" in message.text:
         langs = {
             "🇺🇿 Uzbek → 🇷🇺 Russian": ("uz", "ru"),
@@ -102,14 +102,11 @@ async def all_messages(message: Message):
             "🇺🇿 Uzbek → 🇬🇧 English": ("uz", "en"),
             "🇬🇧 English → 🇺🇿 Uzbek": ("en", "uz"),
         }
-
         src, dest = langs[message.text]
         user_lang[user_id] = {"src": src, "dest": dest}
-
         await message.answer(f"Tanlandi: {message.text}\nEndi tarjima qilinadigan matnni yuboring.")
         return
 
-    # ==== 3) Til tanlanmagan bo‘lsa → tanlashni so‘rash ====
     if user_id not in user_lang:
         await message.answer("⛔ Avval tarjima yo‘nalishini tanlang!", reply_markup=lang_menu())
         return
@@ -117,12 +114,13 @@ async def all_messages(message: Message):
     src = user_lang[user_id]["src"]
     dest = user_lang[user_id]["dest"]
 
-    # ==== 4) Oddiy matnni tarjima qilish ====
     try:
-        translated = translator.translate(message.text, src=src, dest=dest)
+        # googletrans kabi sync translator bo'lsa:
+        translated = await asyncio.to_thread(translator.translate, message.text, src, dest)
         await message.answer(f"🔄 Tarjima:\n\n{translated.text}")
     except Exception as e:
         await message.answer(f"Xato: {e}")
+
 
 @dp.message()
 async def h(message: Message):
