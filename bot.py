@@ -16,7 +16,6 @@ BOT_TOKEN = "8348560606:AAEx2E_cAnUW6HD_b41YpoagJgpIVYcp2_k"
 bot = Bot(BOT_TOKEN)
 dp = Dispatcher()
 
-translator = Translator()
 
 # Foydalanuvchi til yo‘nalishi {user_id: {src: 'uz', dest: 'en'}}
 user_lang = {}
