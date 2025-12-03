@@ -9,7 +9,7 @@ from aiogram.types import (
     ReplyKeyboardMarkup,
     KeyboardButton
 )
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 
 BOT_TOKEN = "8348560606:AAEx2E_cAnUW6HD_b41YpoagJgpIVYcp2_k"
 
@@ -115,9 +115,14 @@ async def all_messages(message: Message):
     dest = user_lang[user_id]["dest"]
 
     try:
-        # googletrans kabi sync translator bo'lsa:
-        translated = await asyncio.to_thread(translator.translate, message.text, src, dest)
-        await message.answer(f"🔄 Tarjima:\n\n{translated.text}")
+        # Tarjimani async threadda ishlatamiz
+        translated = await asyncio.to_thread(
+            GoogleTranslator(source=src, target=dest).translate,
+            message.text
+        )
+
+        await message.answer(translated)
+
     except Exception as e:
         await message.answer(f"Xato: {e}")
 
